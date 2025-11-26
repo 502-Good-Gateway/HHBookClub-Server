@@ -34,14 +34,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    # dev 브랜치에 push 될 때만 배포
+    # dev 브랜치로 push 될 때만 배포
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy to EC2 via SSH
+      - name: Deploy to EC2 via SSH (Docker Deployment)
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -50,15 +49,21 @@ jobs:
           port: 22
           script: |
             cd /home/ubuntu/your-project-dir
+
+            # 1) 최신 코드 가져오기
             git fetch origin
             git checkout dev
             git pull origin dev
 
-            ./gradlew bootJar
+            # 2) 도커 이미지 빌드
+            docker compose build
 
-            # 예시 - 실제 환경에 맞게 수정
-            # pkill -f 'java -jar' || true
-            # nohup java -jar build/libs/*.jar > app.log 2>&1 &
+            # 3) 새로운 버전으로 교체
+            docker compose down
+            docker compose up -d --force-recreate
+
+            # 4) 오래된 dangling 이미지 제거
+            docker image prune -f
 
   dependency-submission:
     runs-on: ubuntu-latest
