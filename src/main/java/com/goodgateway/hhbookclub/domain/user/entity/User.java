@@ -40,6 +40,9 @@ public class User {
     @Column(length = 1000)
     private String refreshToken;
 
+    @Column(columnDefinition = "TEXT")
+    private String favoriteGenres; // Stored as JSON array string, e.g., ["novel", "essay"]
+
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -64,5 +67,9 @@ public class User {
     public void updateProfile(String nickname, String profileImage) {
         this.nickname = nickname;
         this.profileImage = profileImage;
+    }
+
+    public void updateFavoriteGenres(String favoriteGenres) {
+        this.favoriteGenres = favoriteGenres;
     }
 }

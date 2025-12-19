@@ -52,7 +52,7 @@ public class AuthService {
         return AuthResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .user(new UserResponseDto(user))
+                .user(UserResponseDto.from(user))
                 .build();
     }
 }

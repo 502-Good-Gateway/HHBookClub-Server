@@ -1,10 +1,4 @@
 package com.goodgateway.hhbookclub.domain.auth.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@Getter
-@NoArgsConstructor
-public class LoginRequestDto {
-    private String code;
+public record LoginRequestDto(String code) {
 }
