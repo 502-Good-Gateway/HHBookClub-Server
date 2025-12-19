@@ -1,19 +1,36 @@
 package com.goodgateway.hhbookclub.domain.user.dto;
 
 import com.goodgateway.hhbookclub.domain.user.entity.User;
-import lombok.Getter;
+import java.util.List;
 
-@Getter
-public class UserResponseDto {
-    private final Long id;
-    private final String email;
-    private final String nickname;
-    private final String profileImage;
+public record UserResponseDto(
+        Long id,
+        String email,
+        String nickname,
+        String profileImage,
+        List<String> favoriteGenres) {
+    public static UserResponseDto from(User user) {
+        return new UserResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImage(),
+                parseFavoriteGenres(user.getFavoriteGenres()));
+    }
 
-    public UserResponseDto(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.nickname = user.getNickname();
-        this.profileImage = user.getProfileImage();
+    private static List<String> parseFavoriteGenres(String json) {
+        if (json == null || json.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        String content = json.trim();
+        if (content.startsWith("[") && content.endsWith("]")) {
+            content = content.substring(1, content.length() - 1);
+        }
+        if (content.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        return java.util.Arrays.stream(content.split(","))
+                .map(s -> s.trim().replaceAll("^\"|\"$", ""))
+                .collect(java.util.stream.Collectors.toList());
     }
 }
