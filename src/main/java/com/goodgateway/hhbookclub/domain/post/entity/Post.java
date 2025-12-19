@@ -32,7 +32,7 @@ public class Post {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content; // Markdown raw content
 
     @Column(name = "content_format", nullable = false, length = 10)
