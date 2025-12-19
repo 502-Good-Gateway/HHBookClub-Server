@@ -26,11 +26,10 @@ public class PostService {
     public PostListResponseDto getPosts(int page, int limit, String sort, String search) {
         Sort sortBy = switch (sort) {
             case "popular" -> Sort.by(Sort.Direction.DESC, "viewCount");
-            case "rating" -> Sort.by(Sort.Direction.DESC, "rating");
             default -> Sort.by(Sort.Direction.DESC, "createdAt"); // latest
         };
 
-        Pageable pageable = PageRequest.of(page - 1, limit, sortBy); // page is 1-indexed from client
+        Pageable pageable = PageRequest.of(page - 1, limit, sortBy);
         Page<Post> postPage = postRepository.findAllWithSearch(search, pageable);
 
         return PostListResponseDto.from(postPage);
@@ -51,13 +50,7 @@ public class PostService {
                 .user(user)
                 .title(request.title())
                 .content(request.content())
-                .bookTitle(request.bookTitle())
-                .bookAuthor(request.bookAuthor())
-                .bookCover(request.bookCover())
-                .bookPublisher(request.bookPublisher())
-                .rating(request.rating())
-                .startDate(request.startDate())
-                .endDate(request.endDate())
+                .contentFormat(request.contentFormat())
                 .build();
 
         Post savedPost = postRepository.save(post);
@@ -69,7 +62,7 @@ public class PostService {
         Post post = findPostById(id);
         validateAuthor(post, email);
 
-        post.update(request.title(), request.content(), request.rating(), request.endDate());
+        post.update(request.title(), request.content());
         return PostResponseDto.from(post);
     }
 

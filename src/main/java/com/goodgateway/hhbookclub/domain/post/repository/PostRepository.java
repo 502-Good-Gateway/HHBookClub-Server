@@ -11,8 +11,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE " +
             "(:search IS NULL OR :search = '' OR " +
-            "p.title LIKE %:search% OR p.bookTitle LIKE %:search% OR " +
-            "p.bookAuthor LIKE %:search% OR p.content LIKE %:search%)")
+            "p.title LIKE %:search% OR p.content LIKE %:search%)")
     Page<Post> findAllWithSearch(@Param("search") String search, Pageable pageable);
 
     Page<Post> findByUserId(Long userId, Pageable pageable);

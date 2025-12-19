@@ -12,10 +12,7 @@ public record PostListResponseDto(
     public record PostSummaryDto(
             Long id,
             String title,
-            String bookTitle,
-            String bookAuthor,
-            String bookCover,
-            Integer rating,
+            Integer viewCount,
             AuthorSummaryDto author,
             java.time.LocalDateTime createdAt) {
         public record AuthorSummaryDto(Long id, String nickname) {
@@ -27,10 +24,7 @@ public record PostListResponseDto(
                 .map(post -> new PostSummaryDto(
                         post.getId(),
                         post.getTitle(),
-                        post.getBookTitle(),
-                        post.getBookAuthor(),
-                        post.getBookCover(),
-                        post.getRating(),
+                        post.getViewCount(),
                         new PostSummaryDto.AuthorSummaryDto(post.getUser().getId(), post.getUser().getNickname()),
                         post.getCreatedAt()))
                 .toList();
@@ -38,7 +32,7 @@ public record PostListResponseDto(
         return new PostListResponseDto(
                 posts,
                 page.getTotalElements(),
-                page.getNumber() + 1, // 1-indexed
+                page.getNumber() + 1,
                 page.getTotalPages());
     }
 }

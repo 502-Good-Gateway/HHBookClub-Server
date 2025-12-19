@@ -2,20 +2,13 @@ package com.goodgateway.hhbookclub.domain.post.dto;
 
 import com.goodgateway.hhbookclub.domain.post.entity.Post;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record PostResponseDto(
         Long id,
         String title,
         String content,
-        String bookTitle,
-        String bookAuthor,
-        String bookCover,
-        String bookPublisher,
-        Integer rating,
-        LocalDate startDate,
-        LocalDate endDate,
+        String contentFormat,
         Integer viewCount,
         AuthorDto author,
         LocalDateTime createdAt,
@@ -31,13 +24,7 @@ public record PostResponseDto(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getBookTitle(),
-                post.getBookAuthor(),
-                post.getBookCover(),
-                post.getBookPublisher(),
-                post.getRating(),
-                post.getStartDate(),
-                post.getEndDate(),
+                post.getContentFormat(),
                 post.getViewCount(),
                 AuthorDto.from(post.getUser()),
                 post.getCreatedAt(),
