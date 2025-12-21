@@ -1,7 +1,7 @@
 package com.goodgateway.hhbookclub.domain.auth.controller;
 
 import com.goodgateway.hhbookclub.domain.auth.dto.AuthResponseDto;
-import com.goodgateway.hhbookclub.domain.auth.dto.LoginRequestDto;
+import com.goodgateway.hhbookclub.domain.auth.dto.RefreshTokenRequestDto;
 import com.goodgateway.hhbookclub.domain.auth.service.AuthService;
 import com.goodgateway.hhbookclub.global.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +22,13 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그아웃되었습니다.", null));
     }
 
-    @PostMapping("/login/{provider}")
-    public ResponseEntity<ApiResponse<AuthResponseDto>> login(
-            @PathVariable String provider,
-            @RequestBody LoginRequestDto request) {
-        if (request.code() == null) {
-            return ResponseEntity.badRequest().body(ApiResponse.error("Authorization code is missing"));
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponseDto>> refresh(@RequestBody RefreshTokenRequestDto request) {
+        if (request.refreshToken() == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Refresh token is missing"));
         }
 
-        AuthResponseDto result = authService.login(provider, request.code());
+        AuthResponseDto result = authService.refreshToken(request.refreshToken());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }
