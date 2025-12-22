@@ -4,6 +4,7 @@ import com.goodgateway.hhbookclub.domain.user.entity.User;
 import com.goodgateway.hhbookclub.domain.user.repository.UserRepository;
 import com.goodgateway.hhbookclub.global.security.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +40,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
-        // 프론트엔드가 없는 경우 서버 자체 콜백 페이지로 리다이렉트
-        // 프론트엔드 구현 후에는 frontendUrl + "/oauth/callback"으로 변경
-        String redirectUrl = UriComponentsBuilder.fromUriString("/oauth/callback")
+        // Refresh Token을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false); // 로컬 테스트를 위해 false, 운영 환경에서는 true 권장
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(604800); // 7일 (refreshTokenValidity와 맞춤)
+        response.addCookie(refreshTokenCookie);
+
+        String redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/oauth/callback")
                 .queryParam("accessToken", accessToken)
-                .queryParam("refreshToken", refreshToken)
                 .build().toUriString();
 
         response.sendRedirect(redirectUrl);
