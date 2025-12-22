@@ -6,6 +6,7 @@ import com.goodgateway.hhbookclub.global.security.oauth2.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -41,6 +42,8 @@ public class SecurityConfig {
                                                                 "/oauth/callback",
                                                                 "/main",
                                                                 "/error")
+                                                .permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
