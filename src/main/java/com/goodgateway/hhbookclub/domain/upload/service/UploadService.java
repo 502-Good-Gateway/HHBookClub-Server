@@ -16,6 +16,7 @@ import java.util.UUID;
 public class UploadService {
 
     private final S3Presigner s3Presigner;
+    private final com.goodgateway.hhbookclub.domain.upload.repository.S3ImageRepository s3ImageRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -27,10 +28,11 @@ public class UploadService {
      * Generate a presigned URL for uploading an image to S3.
      * The client can use this URL to upload the file directly to S3.
      *
-     * @param filename Original filename
+     * @param filename    Original filename
      * @param contentType MIME type of the file (e.g., "image/png")
      * @return PresignedUrlResponse containing presigned URL and final image URL
      */
+    @org.springframework.transaction.annotation.Transactional
     public PresignedUrlResponse generatePresignedUrl(String filename, String contentType) {
         String extension = "";
         if (filename != null && filename.contains(".")) {
@@ -55,8 +57,17 @@ public class UploadService {
         String presignedUrl = presignedRequest.url().toString();
         String imageUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
 
+        // Track image in DB
+        com.goodgateway.hhbookclub.domain.upload.entity.S3Image s3Image = com.goodgateway.hhbookclub.domain.upload.entity.S3Image
+                .builder()
+                .s3Key(key)
+                .url(imageUrl)
+                .build();
+        s3ImageRepository.save(s3Image);
+
         return new PresignedUrlResponse(presignedUrl, imageUrl);
     }
 
-    public record PresignedUrlResponse(String presignedUrl, String imageUrl) {}
+    public record PresignedUrlResponse(String presignedUrl, String imageUrl) {
+    }
 }
